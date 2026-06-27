@@ -7,16 +7,34 @@ import rich.measure
 
 class Columns:
     proc init(self, renderables, align, padding, expand, width, equal, title):
-        self.renderables = renderables if renderables != nil else []
-        self.align = align if align != nil else "left"
-        self.padding = padding if padding != nil else [0, 1]
-        self.expand = expand if expand != nil else false
-        self.width = width if width != nil else nil
-        self.equal = equal if equal != nil else false
-        self.title = title if title != nil else nil
+        self.renderables = []
+        if renderables != nil:
+            self.renderables = renderables
+        self.align = "left"
+        if align != nil:
+            self.align = align
+        self.padding = [0, 1]
+        if padding != nil:
+            self.padding = padding
+        self.expand = false
+        if expand != nil:
+            self.expand = expand
+        self.width = nil
+        if width != nil:
+            self.width = width
+        self.equal = false
+        if equal != nil:
+            self.equal = equal
+        self.title = nil
+        if title != nil:
+            self.title = title
 
     proc render(self, console):
-        let available_width = self.width if self.width != nil else (console.width if console != nil else 80)
+        let available_width = 80
+        if console != nil:
+            available_width = console.width
+        if self.width != nil:
+            available_width = self.width
         let num_cols = len(self.renderables)
         if num_cols == 0:
             return ""
@@ -24,7 +42,9 @@ class Columns:
             return self._render_single(self.renderables[0])
 
         # Calculate column width
-        let pad = self.padding[1] if len(self.padding) > 1 else 0
+        let pad = 0
+        if len(self.padding) > 1:
+            pad = self.padding[1]
         let space_for_padding = pad * 2 * num_cols + (num_cols - 1)
         let column_width = (available_width - space_for_padding) / num_cols
         column_width = column_width | 0

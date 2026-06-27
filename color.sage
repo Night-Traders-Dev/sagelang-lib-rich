@@ -313,7 +313,9 @@ proc color_ansi_escape(color, background):
     if color == nil:
         return ""
     let ctype = color["type"]
-    let prefix = "48" if background else "38"
+    let prefix = "38"
+    if background:
+        prefix = "48"
     if ctype == COLOR_TYPE_STANDARD:
         let num = color["number"]
         if background:

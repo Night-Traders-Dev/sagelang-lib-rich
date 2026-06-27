@@ -23,12 +23,24 @@ class Padding:
                 if len(pad) >= 4:
                     left = pad[3]
         self.renderable = renderable
-        self.top = top if top != nil else 0
-        self.right = right if right != nil else 0
-        self.bottom = bottom if bottom != nil else 0
-        self.left = left if left != nil else 0
-        self.expand = expand if expand != nil else true
-        self.style = style if style != nil else nil
+        self.top = 0
+        if top != nil:
+            self.top = top
+        self.right = 0
+        if right != nil:
+            self.right = right
+        self.bottom = 0
+        if bottom != nil:
+            self.bottom = bottom
+        self.left = 0
+        if left != nil:
+            self.left = left
+        self.expand = true
+        if expand != nil:
+            self.expand = expand
+        self.style = nil
+        if style != nil:
+            self.style = style
 
     proc render(self, console):
         let content = self._render_content(self.renderable)

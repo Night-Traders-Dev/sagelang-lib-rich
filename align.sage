@@ -84,10 +84,10 @@ proc get_align(name):
     return ALIGN_LEFT
 
 # Detect text alignment from left/right positions
-proc detect_alignment(text, start, end):
+proc detect_alignment(text, start, end_idx):
     let visible_text = rich.measure.strip_ansi(text)
-    if start > 0 and end < len(visible_text):
+    if start > 0 and end_idx < len(visible_text):
         return ALIGN_CENTER
-    if end == len(visible_text):
+    if end_idx == len(visible_text):
         return ALIGN_RIGHT
     return ALIGN_LEFT

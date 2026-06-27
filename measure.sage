@@ -8,7 +8,9 @@ proc measure_text(text):
         return 0
     let count = 0
     let i = 0
-    let txt = text if type(text) == "string" else str(text)
+    let txt = str(text)
+    if type(text) == "string":
+        txt = text
     while i < len(txt):
         if txt[i] == chr(27) and i + 1 < len(txt) and txt[i + 1] == "[":
             # Skip ANSI escape sequence

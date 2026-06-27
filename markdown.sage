@@ -8,8 +8,12 @@ import rich.measure
 class Markdown:
     proc init(self, markup, code_theme, hyperlinks):
         self.markup = markup
-        self.code_theme = code_theme if code_theme != nil else "monokai"
-        self.hyperlinks = hyperlinks if hyperlinks != nil else true
+        self.code_theme = "monokai"
+        if code_theme != nil:
+            self.code_theme = code_theme
+        self.hyperlinks = true
+        if hyperlinks != nil:
+            self.hyperlinks = hyperlinks
 
     proc render(self, console):
         let lines = split(self.markup, chr(10))
@@ -56,9 +60,11 @@ class Markdown:
             # Horizontal rules
             if lns == "---" or lns == "***" or lns == "___":
                 let hr = ""
-                let width = 80 if console == nil else console.width
+                let width = console.width
+                if console == nil:
+                    width = 80
                 for j in range(width):
-                    hr = hr + chr(9472)
+                    hr = hr + "─"
                 push(result_lines, rich.style.render_styled(hr, rich.style.parse_style("dim")))
                 continue
 
@@ -67,7 +73,7 @@ class Markdown:
                 let text = ""
                 for j in range(len(lns) - 2):
                     text = text + lns[2 + j]
-                push(result_lines, "  " + rich.style.render_styled(chr(8226), rich.style.parse_style("cyan")) + " " + text)
+                push(result_lines, "  " + rich.style.render_styled("•", rich.style.parse_style("cyan")) + " " + text)
                 continue
 
             # Ordered lists
@@ -88,7 +94,7 @@ class Markdown:
                 let text = ""
                 for j in range(len(lns) - 2):
                     text = text + lns[2 + j]
-                let rendered = rich.style.render_styled(chr(9474) + " ", rich.style.parse_style("dim")) + rich.style.render_styled(text, rich.style.parse_style("dim"))
+                let rendered = rich.style.render_styled("│" + " ", rich.style.parse_style("dim")) + rich.style.render_styled(text, rich.style.parse_style("dim"))
                 push(result_lines, rendered)
                 continue
 
@@ -182,11 +188,11 @@ class Markdown:
     proc _find_next(self, text, substr, start):
         let slen = len(substr)
         for i in range(len(text) - slen - start + 1):
-            let match = true
+            let is_match = true
             for j in range(slen):
                 if text[start + i + j] != substr[j]:
-                    match = false
-            if match:
+                    is_match = false
+            if is_match:
                 return start + i
         return -1
 

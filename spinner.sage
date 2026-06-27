@@ -70,8 +70,12 @@ proc get_spinner(name):
 class Spinner:
     proc init(self, name, text, style):
         self.frames = get_spinner(name)
-        self.text = text if text != nil else ""
-        self.style_str = style if style != nil else "green"
+        self.text = ""
+        if text != nil:
+            self.text = text
+        self.style_str = "green"
+        if style != nil:
+            self.style_str = style
         self._index = 0
 
     proc render(self):

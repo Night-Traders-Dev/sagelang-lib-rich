@@ -12,24 +12,60 @@ class Table:
     proc init(self, title, caption, box_style, border_style, show_header,
               show_footer, show_edge, show_lines, padding, expand, width, style,
               header_style, title_style, caption_style, row_styles, leading, safe_box):
-        self.title = title if title != nil else nil
-        self.caption = caption if caption != nil else nil
-        self.box_style = box_style if box_style != nil else rich.box.get_box("single")
-        self.border_style = border_style if border_style != nil else "blue"
-        self.show_header = show_header if show_header != nil else true
-        self.show_footer = show_footer if show_footer != nil else false
-        self.show_edge = show_edge if show_edge != nil else true
-        self.show_lines = show_lines if show_lines != nil else false
-        self.padding = padding if padding != nil else [0, 1]
-        self.expand = expand if expand != nil else false
-        self.width = width if width != nil else nil
-        self.style = style if style != nil else nil
-        self.header_style = header_style if header_style != nil else "bold white"
-        self.title_style = title_style if title_style != nil else "bold"
-        self.caption_style = caption_style if caption_style != nil else "italic dim"
-        self.row_styles = row_styles if row_styles != nil else []
-        self.leading = leading if leading != nil else 0
-        self.safe_box = safe_box if safe_box != nil else true
+        self.title = nil
+        if title != nil:
+            self.title = title
+        self.caption = nil
+        if caption != nil:
+            self.caption = caption
+        self.box_style = rich.box.get_box("single")
+        if box_style != nil:
+            self.box_style = box_style
+        self.border_style = "blue"
+        if border_style != nil:
+            self.border_style = border_style
+        self.show_header = true
+        if show_header != nil:
+            self.show_header = show_header
+        self.show_footer = false
+        if show_footer != nil:
+            self.show_footer = show_footer
+        self.show_edge = true
+        if show_edge != nil:
+            self.show_edge = show_edge
+        self.show_lines = false
+        if show_lines != nil:
+            self.show_lines = show_lines
+        self.padding = [0, 1]
+        if padding != nil:
+            self.padding = padding
+        self.expand = false
+        if expand != nil:
+            self.expand = expand
+        self.width = nil
+        if width != nil:
+            self.width = width
+        self.style = nil
+        if style != nil:
+            self.style = style
+        self.header_style = "bold white"
+        if header_style != nil:
+            self.header_style = header_style
+        self.title_style = "bold"
+        if title_style != nil:
+            self.title_style = title_style
+        self.caption_style = "italic dim"
+        if caption_style != nil:
+            self.caption_style = caption_style
+        self.row_styles = []
+        if row_styles != nil:
+            self.row_styles = row_styles
+        self.leading = 0
+        if leading != nil:
+            self.leading = leading
+        self.safe_box = true
+        if safe_box != nil:
+            self.safe_box = safe_box
         self.columns = []
         self.rows = []
         self._column_widths = nil
@@ -42,19 +78,41 @@ class Table:
         if no_wrap == nil:
             no_wrap = false
         let col = {}
-        col["header"] = header if header != nil else ""
-        col["footer"] = footer if footer != nil else ""
+        col["header"] = ""
+        if header != nil:
+            col["header"] = header
+        col["footer"] = ""
+        if footer != nil:
+            col["footer"] = footer
         col["justify"] = justify
-        col["style"] = style if style != nil else nil
-        col["header_style"] = header_style if header_style != nil else nil
-        col["footer_style"] = footer_style if footer_style != nil else nil
-        col["width"] = width if width != nil else nil
-        col["min_width"] = min_width if min_width != nil else 1
-        col["max_width"] = max_width if max_width != nil else nil
-        col["ratio"] = ratio if ratio != nil else 1
+        col["style"] = nil
+        if style != nil:
+            col["style"] = style
+        col["header_style"] = nil
+        if header_style != nil:
+            col["header_style"] = header_style
+        col["footer_style"] = nil
+        if footer_style != nil:
+            col["footer_style"] = footer_style
+        col["width"] = nil
+        if width != nil:
+            col["width"] = width
+        col["min_width"] = 1
+        if min_width != nil:
+            col["min_width"] = min_width
+        col["max_width"] = nil
+        if max_width != nil:
+            col["max_width"] = max_width
+        col["ratio"] = 1
+        if ratio != nil:
+            col["ratio"] = ratio
         col["no_wrap"] = no_wrap
-        col["overflow"] = overflow if overflow != nil else "fold"
-        col["vertical"] = vertical if vertical != nil else "top"
+        col["overflow"] = "fold"
+        if overflow != nil:
+            col["overflow"] = overflow
+        col["vertical"] = "top"
+        if vertical != nil:
+            col["vertical"] = vertical
         push(self.columns, col)
         return self
 
@@ -223,7 +281,9 @@ class Table:
                     result = result + box["mid"]
                 if section == "header_sep":
                     result = result + box["mid_top"]
-            let h = box[section] if section == "top" or section == "bottom" else box["top"]
+            let h = box["top"]
+            if section == "top" or section == "bottom":
+                h = box[section]
             for i in range(widths[c]):
                 result = result + h
 
@@ -244,13 +304,18 @@ class Table:
 
         for c in range(num_cols):
             if c > 0:
-                result = result + box["mid_left"] if row_type == "header" or row_type == "data" else box["mid_right"]
+                let sep_char = box["mid_right"]
+                if row_type == "header" or row_type == "data":
+                    sep_char = box["mid_left"]
+                result = result + sep_char
 
             let content = ""
             if row_type == "header" or row_type == "footer":
                 if c < len(items):
                     let col = items[c]
-                    content = col["header"] if row_type == "header" else col["footer"]
+                    content = col["footer"]
+                    if row_type == "header":
+                        content = col["header"]
             else:
                 if c < len(items):
                     content = str(items[c])

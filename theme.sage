@@ -7,7 +7,9 @@ import rich.color
 proc Theme(name, styles):
     let theme = {}
     theme["name"] = name
-    theme["styles"] = styles if styles != nil else {}
+    theme["styles"] = {}
+    if styles != nil:
+        theme["styles"] = styles
     return theme
 
 # Get a style by name from the theme
@@ -146,8 +148,11 @@ proc bright_red_style():
 proc magenta_style():
     return "magenta"
 
-proc dim_style():
-    return "dim"
+proc bright_magenta_style():
+    return "bright_magenta"
+
+proc bright_black_style():
+    return "bright_black"
 
 # Create a theme with name
 proc create_theme(name):

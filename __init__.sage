@@ -24,152 +24,75 @@ import rich.spinner
 import rich.traceback
 import rich.prompt
 
-# Re-export commonly used classes and functions
+# --- Convenience factory procs (Python-rich compatible API) ---
 
-# Console
-let Console = rich.console.Console
-let Live = rich.console.Live
+# Panel(content, title=nil, border_style=nil, box=nil)
+proc Panel(content, title, border_style, box_name):
+    let bl = "left"
+    let bx = "single"
+    if box_name != nil:
+        bx = box_name
+    let bs = border_style
+    if bs == nil:
+        bs = ""
+    return rich.panel.Panel(content, title, bl, nil, "right", bx, bs, [0,1], true, nil, "")
 
-# Panel
-let Panel = rich.panel.Panel
-let create_panel = rich.panel.create_panel
+# Table(title=nil, box=nil, border_style=nil)
+proc Table(title, box_name, border_style):
+    let bx = "single"
+    if box_name != nil:
+        bx = box_name
+    return rich.table.Table(title, nil, bx, border_style, true, nil, true, nil, [0,1], nil, nil, nil, nil, nil, nil, nil, nil, true)
 
-# Table
-let Table = rich.table.Table
-let create_table = rich.table.create_table
+# Tree(label=nil, style=nil)
+proc Tree(label, style):
+    return rich.tree.Tree(label, style, "dim", false)
 
-# Text
-let Text = rich.text.Text
-let segment_text = rich.text.segment_text
-let styled_text = rich.text.styled_text
-let text_from_string = rich.text.text_from_string
-let span = rich.text.span
-let assemble = rich.text.assemble
+# Rule(title=nil, style=nil, align=nil)
+proc Rule(title, style, align):
+    let al = "center"
+    if align != nil:
+        al = align
+    return rich.rule.Rule(title, style, al, "─")
 
-# Style
-let Style = rich.style.Style
-let parse_style = rich.style.parse_style
-let merge_styles = rich.style.merge_styles
-let render_styled = rich.style.render_styled
+# Markdown(markup=nil)
+proc Markdown(markup):
+    return rich.markdown.Markdown(markup, nil, nil)
 
-# Color
-let Color = rich.color.Color
-let parse_color = rich.color.parse_color
-let rgb_color = rich.color.rgb_color
-let color256 = rich.color.color256
+# --- Print helpers ---
 
-# Box
-let Box = rich.box.Box
-let get_box = rich.box.get_box
+# show(obj) - print any rich renderable (replaces rich.print, since print is a keyword)
+proc show(obj):
+    let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
+    c.rich_print(obj)
 
-# Theme
-let Theme = rich.theme.Theme
-let create_theme = rich.theme.create_theme
-let default_theme = rich.theme.create_default_theme
-
-# Rule
-let Rule = rich.rule.Rule
-
-# Tree
-let Tree = rich.tree.Tree
-let create_tree = rich.tree.create_tree
-
-# Columns
-let Columns = rich.columns.Columns
-
-# Layout
-let Layout = rich.layout.Layout
-
-# Progress
-let Progress = rich.progress.Progress
-let ProgressBar = rich.progress.ProgressBar
-let Status = rich.progress.Status
-
-# Markdown
-let Markdown = rich.markdown.Markdown
-let parse_markdown = rich.markdown.parse_markdown
-
-# Padding
-let Padding = rich.padding.Padding
-
-# Emoji
-let emoji = rich.emoji.get_emoji
-let emoji_replace = rich.emoji.emoji_replace
-
-# Spinner
-let Spinner = rich.spinner.Spinner
-
-# Traceback
-let Traceback = rich.traceback.Traceback
-let render_traceback = rich.traceback.render_traceback
-let from_exception = rich.traceback.from_exception
-
-# Prompt
-let Prompt = rich.prompt.Prompt
-let ask = rich.prompt.ask
-let confirm = rich.prompt.confirm
-
-# Measurement
-let measure_text = rich.measure.measure_text
-let visible_length = rich.measure.visible_length
-
-# Alignment
-let align = rich.align.align
-let ALIGN_LEFT = rich.align.ALIGN_LEFT
-let ALIGN_CENTER = rich.align.ALIGN_CENTER
-let ALIGN_RIGHT = rich.align.ALIGN_RIGHT
-
-# Quick print with rich formatting
-proc print(obj):
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(obj)
-
-# Print styled text
+# print_styled(text, style_str) - print styled text
 proc print_styled(text, style_str):
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(rich.style.render_styled(str(text), rich.style.parse_style(style_str)))
+    let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
+    let rendered = rich.style.render_styled(str(text), rich.style.parse_style(style_str))
+    c.rich_print(rendered)
 
-# Print a rule
-proc print_rule(title, style):
-    let c = Console(nil, nil, 80, 25, true, false)
-    let rule = Rule(title, style, "center", nil)
-    c.print(rule.render(c))
-
-# Print a panel
-proc print_panel(content, title):
-    let panel = Panel(content, title, nil, nil, nil, true, nil, nil)
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(panel.render(c))
-
-# Print markdown
+# print_markdown(markup) - render and print markdown
 proc print_markdown(markup):
-    let md = Markdown(markup, nil, true)
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(md.render(c))
+    let md = Markdown(markup)
+    let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
+    c.rich_print(md.render(c))
 
-# Print a table quickly
+# print_table(headers, rows, title) - print a quick table
 proc print_table(headers, rows, title):
-    let table = Table(title, nil, nil, nil, true, false, true, false, nil, false, nil, nil, nil, nil, nil, nil, nil, true)
+    let t = Table(title, nil, nil)
     for i in range(len(headers)):
-        table.add_column(headers[i], nil, "left", nil, nil, nil, nil, nil, nil, nil, false, nil, nil)
+        t.add_column(headers[i], nil, "left", nil, nil, nil, nil, nil, nil, nil, false, nil, nil)
     for i in range(len(rows)):
-        table.add_row(rows[i])
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(table.render(c))
+        t.add_row(rows[i])
+    let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
+    c.rich_print(t.render(c))
 
-# Print JSON
-proc print_json(data):
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print_json(data)
+# print_tree(tree) - print a tree
+proc print_tree(t):
+    let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
+    c.rich_print(t.render(c))
 
-# Print a progress bar
-proc print_progress(completed, total, width):
-    let bar = ProgressBar(total, width, nil, nil, nil, nil, true)
-    bar.update(completed)
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(bar.render(c))
-
-# Print a tree
-proc print_tree(tree_root):
-    let c = Console(nil, nil, 80, 25, true, false)
-    c.print(tree_root.render(c))
+# emoji(name) - get an emoji character  
+proc get_emoji(name):
+    return rich.emoji.get_emoji(name)

@@ -20,11 +20,21 @@ class Console:
         if color_system == nil:
             color_system = "truecolor"
         self.color_system = color_system
-        self.theme = theme if theme != nil else rich.theme.create_theme("default")
-        self.width = width if width != nil else 80
-        self.height = height if height != nil else 25
-        self.force_terminal = force_terminal if force_terminal != nil else true
-        self.no_color = no_color if no_color != nil else false
+        self.theme = rich.theme.create_theme("default")
+        if theme != nil:
+            self.theme = theme
+        self.width = 80
+        if width != nil:
+            self.width = width
+        self.height = 25
+        if height != nil:
+            self.height = height
+        self.force_terminal = true
+        if force_terminal != nil:
+            self.force_terminal = force_terminal
+        self.no_color = false
+        if no_color != nil:
+            self.no_color = no_color
         self.record = false
         self.export_html = false
         self.export_svg = false
@@ -38,11 +48,12 @@ class Console:
             self.height = size["height"]
 
     # Print a rich renderable object
-    proc print(self, obj, end, style, highlight):
-        if end == nil:
-            end = chr(10)
+    proc rich_print(self, obj, end_str, style, highlight):
+        let actual_end = chr(10)
+        if end_str != nil:
+            actual_end = end_str
         let rendered = self.render(obj)
-        self._output(rendered + end)
+        self._output(rendered + actual_end)
 
     # Output raw text (low level)
     proc _output(self, text):
@@ -82,7 +93,7 @@ class Console:
         if style == nil:
             style = "dim"
         let width = self.width
-        let char_str = chr(9472)
+        let char_str = "─"
         if title == nil or title == "":
             let line = ""
             for i in range(width):
@@ -180,11 +191,11 @@ class Console:
 
     # Log a warning/error message with theme styling
     proc log(self, message, log_locals):
-        self.print(message)
+        self.rich_print(message)
 
     # Print JSON with syntax highlighting (basic)
     proc print_json(self, data):
-        self.print(self._format_json(data, ""))
+        self.rich_print(self._format_json(data, ""))
 
     proc _format_json(self, data, indent):
         let nl = chr(10)
@@ -231,8 +242,12 @@ class Live:
     proc init(self, renderable, console, refresh_per_second, transient):
         self.renderable = renderable
         self.console = console
-        self.refresh_per_second = refresh_per_second if refresh_per_second != nil else 4
-        self.transient = transient if transient != nil else false
+        self.refresh_per_second = 4
+        if refresh_per_second != nil:
+            self.refresh_per_second = refresh_per_second
+        self.transient = false
+        if transient != nil:
+            self.transient = transient
         self._visible = false
         self._last_lines = 0
 
@@ -272,5 +287,5 @@ class Live:
 
 # Convenience function to print rich output
 proc print_rich(obj, style):
-    let c = Console(nil, nil, nil, nil, true, false)
-    c.print(obj)
+    let c = Console(nil, nil, nil, nil, nil, nil)
+    c.rich_print(obj)

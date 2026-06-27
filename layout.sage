@@ -8,10 +8,18 @@ class Layout:
     proc init(self, content, name, size, ratio, minimum_size, visible):
         self.content = content
         self.name = name
-        self.size = size if size != nil else nil
-        self.ratio = ratio if ratio != nil else 1
-        self.minimum_size = minimum_size if minimum_size != nil else 1
-        self.visible = visible if visible != nil else true
+        self.size = nil
+        if size != nil:
+            self.size = size
+        self.ratio = 1
+        if ratio != nil:
+            self.ratio = ratio
+        self.minimum_size = 1
+        if minimum_size != nil:
+            self.minimum_size = minimum_size
+        self.visible = true
+        if visible != nil:
+            self.visible = visible
         self.children = {}
         self.direction = "vertical"  # vertical or horizontal
 
@@ -51,8 +59,12 @@ class Layout:
 
     # Render the layout
     proc render(self, console):
-        let width = console.width if console != nil else 80
-        let height = console.height if console != nil else 25
+        let width = 80
+        if console != nil:
+            width = console.width
+        let height = 25
+        if console != nil:
+            height = console.height
         return self._render_region(width, height)
 
     proc __rich__(self, console):

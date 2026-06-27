@@ -12,16 +12,25 @@ class Panel:
     proc init(self, content, title, title_align, subtitle, subtitle_align,
               box_style, border_style, padding, expand, width, style):
         self.content = content
-        self.title = title if title != nil else nil
-        self.title_align = title_align if title_align != nil else "left"
-        self.subtitle = subtitle if subtitle != nil else nil
-        self.subtitle_align = subtitle_align if subtitle_align != nil else "right"
-        self.box_style = box_style if box_style != nil else rich.box.get_box("single")
-        self.border_style = rich.style.parse_style(border_style) if border_style != nil else nil
-        self.padding = padding if padding != nil else [0, 1]  # [top_bottom, left_right]
-        self.expand = expand if expand != nil else true
-        self.width = width if width != nil else nil
-        self.style = rich.style.parse_style(style) if style != nil else nil
+        self.title = title
+        self.title_align = title_align
+        self.subtitle = subtitle
+        self.subtitle_align = subtitle_align
+        if type(box_style) == "string":
+            self.box_style = rich.box.get_box(box_style)
+        else:
+            self.box_style = box_style
+        if type(border_style) == "string":
+            self.border_style = rich.style.parse_style(border_style)
+        else:
+            self.border_style = border_style
+        self.padding = padding
+        self.expand = expand
+        self.width = width
+        if type(style) == "string":
+            self.style = rich.style.parse_style(style)
+        else:
+            self.style = style
 
     # Render the panel
     proc render(self, console):
@@ -44,14 +53,18 @@ class Panel:
             let lw = rich.measure.measure_text(content_lines[i])
             if lw > max_content_width:
                 max_content_width = lw
-        let pad = self.padding[1] if len(self.padding) >= 2 else 0
+        let pad = 0
+        if len(self.padding) >= 2:
+            pad = self.padding[1]
         let width = max_content_width + pad * 2
         if self.width != nil:
             width = self.width
         if width < 4:
             width = 4
 
-        let border = rich.style.render_styled("", self.border_style) if self.border_style != nil else ""
+        let border = ""
+        if self.border_style != nil:
+            border = rich.style.render_styled("", self.border_style)
         # Build output
         let lines = []
 
@@ -60,7 +73,9 @@ class Panel:
         lines = push(lines, top_line)
 
         # Top padding
-        let top_pad = self.padding[0] if len(self.padding) > 0 else 0
+        let top_pad = 0
+        if len(self.padding) > 0:
+            top_pad = self.padding[0]
         for i in range(top_pad):
             let pad_line = v + self._repeat_char(" ", width) + rv
             if self.border_style != nil:

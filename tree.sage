@@ -8,9 +8,15 @@ import rich.measure
 class Tree:
     proc init(self, label, style, guide_style, highlight):
         self.label = label
-        self.style = style if style != nil else nil
-        self.guide_style = guide_style if guide_style != nil else "dim"
-        self.highlight = highlight if highlight != nil else false
+        self.style = nil
+        if style != nil:
+            self.style = style
+        self.guide_style = "dim"
+        if guide_style != nil:
+            self.guide_style = guide_style
+        self.highlight = false
+        if highlight != nil:
+            self.highlight = highlight
         self.children = []
         self._expanded = true
 
@@ -38,17 +44,19 @@ class Tree:
         return self.render(nil)
 
     proc _render_tree(self, prefix, indent, is_root):
-        let guide = chr(9474)  # |
-        let branch = chr(9500)  # |
-        let last_branch = chr(9492)  # |
-        let horiz = chr(9472)  # -
+        let guide = "│"  # |
+        let branch = "├"  # |
+        let last_branch = "└"  # |
+        let horiz = "─"  # -
         let result = ""
 
         if is_root:
             let label_str = str(self.label)
             result = result + label_str
         else:
-            let connector = last_branch if len(self.children) == 0 else branch
+            let connector = branch
+            if len(self.children) == 0:
+                connector = last_branch
             result = result + indent + connector + horiz + horiz + " " + str(self.label)
             if len(self.children) > 0:
                 indent = indent + guide + "   "
@@ -65,13 +73,15 @@ class Tree:
         return result
 
     proc _render_subtree(self, indent, is_last):
-        let guide = chr(9474)
-        let branch = chr(9500)
-        let last_branch = chr(9492)
-        let horiz = chr(9472)
+        let guide = "│"
+        let branch = "├"
+        let last_branch = "└"
+        let horiz = "─"
         let result = ""
 
-        let connector = last_branch if is_last else branch
+        let connector = branch
+        if is_last:
+            connector = last_branch
         result = result + indent + connector + horiz + horiz + " " + str(self.label) + chr(10)
 
         if is_last:

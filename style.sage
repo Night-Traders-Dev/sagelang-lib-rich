@@ -30,16 +30,36 @@ let STYLE_STRIKE = 64
 # Create a style object
 proc Style(color, bgcolor, bold, dim, italic, underline, blink, reverse, strike, link):
     let style = {}
-    style["color"] = color if color != nil else nil
-    style["bgcolor"] = bgcolor if bgcolor != nil else nil
-    style["bold"] = bold if bold != nil else false
-    style["dim"] = dim if dim != nil else false
-    style["italic"] = italic if italic != nil else false
-    style["underline"] = underline if underline != nil else false
-    style["blink"] = blink if blink != nil else false
-    style["reverse"] = reverse if reverse != nil else false
-    style["strike"] = strike if strike != nil else false
-    style["link"] = link if link != nil else nil
+    style["color"] = nil
+    if color != nil:
+        style["color"] = color
+    style["bgcolor"] = nil
+    if bgcolor != nil:
+        style["bgcolor"] = bgcolor
+    style["bold"] = false
+    if bold != nil:
+        style["bold"] = bold
+    style["dim"] = false
+    if dim != nil:
+        style["dim"] = dim
+    style["italic"] = false
+    if italic != nil:
+        style["italic"] = italic
+    style["underline"] = false
+    if underline != nil:
+        style["underline"] = underline
+    style["blink"] = false
+    if blink != nil:
+        style["blink"] = blink
+    style["reverse"] = false
+    if reverse != nil:
+        style["reverse"] = reverse
+    style["strike"] = false
+    if strike != nil:
+        style["strike"] = strike
+    style["link"] = nil
+    if link != nil:
+        style["link"] = link
     return style
 
 proc style_default():
@@ -52,7 +72,6 @@ proc parse_style(style_str):
     let s = style_default()
     let parts = split(lower(style_str), " ")
     let i = 0
-    let on_next = false
     let expecting_on = false
     while i < len(parts):
         let part = parts[i]
@@ -65,40 +84,49 @@ proc parse_style(style_str):
             continue
         if part == "bold":
             s["bold"] = true
-        else if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "bold":
-            s["bold"] = false
-            i = i + 1
-        else if part == "dim":
-            s["dim"] = true
-        else if part == "italic":
-            s["italic"] = true
-        else if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "italic":
-            s["italic"] = false
-            i = i + 1
-        else if part == "underline":
-            s["underline"] = true
-        else if part == "blink":
-            s["blink"] = true
-        else if part == "reverse":
-            s["reverse"] = true
-        else if part == "strike":
-            s["strike"] = true
-        else if part == "link":
-            if i + 1 < len(parts):
-                s["link"] = parts[i + 1]
-                i = i + 1
-        else if part == "default" or part == "none":
-            s["color"] = nil
-            s["bgcolor"] = nil
         else:
-            # Try to parse as color
-            let c = rich.color.parse_color(part)
-            if c != nil:
-                if expecting_on:
-                    s["bgcolor"] = c
-                    expecting_on = false
+            if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "bold":
+                s["bold"] = false
+                i = i + 1
+            else:
+                if part == "dim":
+                    s["dim"] = true
                 else:
-                    s["color"] = c
+                    if part == "italic":
+                        s["italic"] = true
+                    else:
+                        if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "italic":
+                            s["italic"] = false
+                            i = i + 1
+                        else:
+                            if part == "underline":
+                                s["underline"] = true
+                            else:
+                                if part == "blink":
+                                    s["blink"] = true
+                                else:
+                                    if part == "reverse":
+                                        s["reverse"] = true
+                                    else:
+                                        if part == "strike":
+                                            s["strike"] = true
+                                        else:
+                                            if part == "link":
+                                                if i + 1 < len(parts):
+                                                    s["link"] = parts[i + 1]
+                                                    i = i + 1
+                                            else:
+                                                if part == "default" or part == "none":
+                                                    s["color"] = nil
+                                                    s["bgcolor"] = nil
+                                                else:
+                                                    let c = rich.color.parse_color(part)
+                                                    if c != nil:
+                                                        if expecting_on:
+                                                            s["bgcolor"] = c
+                                                            expecting_on = false
+                                                        else:
+                                                            s["color"] = c
         i = i + 1
     return s
 
@@ -169,16 +197,36 @@ proc merge_styles(base, override):
     if base == nil:
         return override
     let result = {}
-    result["color"] = override["color"] if override["color"] != nil else base["color"]
-    result["bgcolor"] = override["bgcolor"] if override["bgcolor"] != nil else base["bgcolor"]
-    result["bold"] = override["bold"] if override["bold"] != false else base["bold"]
-    result["dim"] = override["dim"] if override["dim"] != false else base["dim"]
-    result["italic"] = override["italic"] if override["italic"] != false else base["italic"]
-    result["underline"] = override["underline"] if override["underline"] != false else base["underline"]
-    result["blink"] = override["blink"] if override["blink"] != false else base["blink"]
-    result["reverse"] = override["reverse"] if override["reverse"] != false else base["reverse"]
-    result["strike"] = override["strike"] if override["strike"] != false else base["strike"]
-    result["link"] = override["link"] if override["link"] != nil else base["link"]
+    result["color"] = base["color"]
+    if override["color"] != nil:
+        result["color"] = override["color"]
+    result["bgcolor"] = base["bgcolor"]
+    if override["bgcolor"] != nil:
+        result["bgcolor"] = override["bgcolor"]
+    result["bold"] = base["bold"]
+    if override["bold"] != false:
+        result["bold"] = override["bold"]
+    result["dim"] = base["dim"]
+    if override["dim"] != false:
+        result["dim"] = override["dim"]
+    result["italic"] = base["italic"]
+    if override["italic"] != false:
+        result["italic"] = override["italic"]
+    result["underline"] = base["underline"]
+    if override["underline"] != false:
+        result["underline"] = override["underline"]
+    result["blink"] = base["blink"]
+    if override["blink"] != false:
+        result["blink"] = override["blink"]
+    result["reverse"] = base["reverse"]
+    if override["reverse"] != false:
+        result["reverse"] = override["reverse"]
+    result["strike"] = base["strike"]
+    if override["strike"] != false:
+        result["strike"] = override["strike"]
+    result["link"] = base["link"]
+    if override["link"] != nil:
+        result["link"] = override["link"]
     return result
 
 # Get a null style (empty)

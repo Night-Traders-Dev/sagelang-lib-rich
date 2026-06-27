@@ -7,8 +7,12 @@ import rich.measure
 # A segment is a single piece of text with a style
 proc Segment(text, style):
     let seg = {}
-    seg["text"] = text if text != nil else ""
-    seg["style"] = style if style != nil else rich.style.style_default()
+    seg["text"] = ""
+    if text != nil:
+        seg["text"] = text
+    seg["style"] = rich.style.style_default()
+    if style != nil:
+        seg["style"] = style
     return seg
 
 # Create a segment from plain text
@@ -31,9 +35,9 @@ proc segment_width(seg):
 # Split a segment at position
 proc segment_split(seg, pos):
     if pos <= 0:
-        return Segment("", seg["style"]), seg
+        return (Segment("", seg["style"]), seg)
     if pos >= len(seg["text"]):
-        return seg, Segment("", seg["style"])
+        return (seg, Segment("", seg["style"]))
     let left = Segment("", seg["style"])
     left["text"] = ""
     for i in range(pos):
@@ -42,7 +46,7 @@ proc segment_split(seg, pos):
     right["text"] = ""
     for i in range(len(seg["text"]) - pos):
         right["text"] = right["text"] + seg["text"][pos + i]
-    return left, right
+    return (left, right)
 
 # Style a segment
 proc segment_style(seg, style):
@@ -85,12 +89,14 @@ class Text:
         return self.append(text, nil)
 
     # Stylize - apply a style to the whole text
-    proc stylize(self, style, start, end):
-        if start == nil:
-            start = 0
+    proc stylize(self, style, start, end_pos):
+        let actual_start = start
+        let actual_end = end_pos
+        if actual_start == nil:
+            actual_start = 0
         let total = self._total_chars()
-        if end == nil:
-            end = total
+        if actual_end == nil:
+            actual_end = total
         let pos = 0
         let new_segs = []
         for i in range(len(self.segments)):
@@ -98,22 +104,21 @@ class Text:
             let seg_text = seg["text"]
             let seg_len = len(seg_text)
             let seg_start = pos
-            let seg_end = pos + seg_len
-            if seg_end <= start or seg_start >= end:
+            let seg_end_pos = pos + seg_len
+            if seg_end_pos <= actual_start or seg_start >= actual_end:
                 push(new_segs, seg)
             else:
-                # Segment overlaps with the range
                 let before_text = ""
                 let during_text = ""
                 let after_text = ""
                 let j = 0
                 while j < seg_len:
                     let char_pos = pos + j
-                    if char_pos < start:
+                    if char_pos < actual_start:
                         before_text = before_text + seg_text[j]
-                    if char_pos >= start and char_pos < end:
+                    if char_pos >= actual_start and char_pos < actual_end:
                         during_text = during_text + seg_text[j]
-                    if char_pos >= end:
+                    if char_pos >= actual_end:
                         after_text = after_text + seg_text[j]
                     j = j + 1
                 if len(before_text) > 0:
@@ -184,8 +189,8 @@ class Text:
         return self
 
     # Set end character(s)
-    proc set_end(self, end):
-        self.end = end
+    proc set_end(self, end_str):
+        self.end = end_str
         return self
 
     # Set overflow behavior

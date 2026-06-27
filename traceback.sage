@@ -9,10 +9,18 @@ import rich.panel
 proc Traceback(exception, frames, show_locals, width, extra_lines):
     let tb = {}
     tb["exception"] = exception
-    tb["frames"] = frames if frames != nil else []
-    tb["show_locals"] = show_locals if show_locals != nil else false
-    tb["width"] = width if width != nil else 100
-    tb["extra_lines"] = extra_lines if extra_lines != nil else 0
+    tb["frames"] = []
+    if frames != nil:
+        tb["frames"] = frames
+    tb["show_locals"] = false
+    if show_locals != nil:
+        tb["show_locals"] = show_locals
+    tb["width"] = 100
+    if width != nil:
+        tb["width"] = width
+    tb["extra_lines"] = 0
+    if extra_lines != nil:
+        tb["extra_lines"] = extra_lines
     return tb
 
 # Add a frame to the traceback
@@ -20,9 +28,15 @@ proc add_frame(tb, filename, line, func, code, locals_dict):
     let frame = {}
     frame["filename"] = filename
     frame["line"] = line
-    frame["func"] = func if func != nil else ""
-    frame["code"] = code if code != nil else ""
-    frame["locals"] = locals_dict if locals_dict != nil else {}
+    frame["func"] = ""
+    if func != nil:
+        frame["func"] = func
+    frame["code"] = ""
+    if code != nil:
+        frame["code"] = code
+    frame["locals"] = {}
+    if locals_dict != nil:
+        frame["locals"] = locals_dict
     push(tb["frames"], frame)
 
 # Format a traceback as a string

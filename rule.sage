@@ -7,13 +7,23 @@ import rich.measure
 
 class Rule:
     proc init(self, title, style, align, characters):
-        self.title = title if title != nil else ""
-        self.style_str = style if style != nil else ""
-        self.align = align if align != nil else "center"
-        self.characters = characters if characters != nil else chr(9472)
+        self.title = ""
+        if title != nil:
+            self.title = title
+        self.style_str = ""
+        if style != nil:
+            self.style_str = style
+        self.align = "center"
+        if align != nil:
+            self.align = align
+        self.characters = "─"
+        if characters != nil:
+            self.characters = characters
 
     proc render(self, console):
-        let width = console.width if console != nil else 80
+        let width = 80
+        if console != nil:
+            width = console.width
         let ch = self.characters
         if self.title == "" or self.title == nil:
             let line = ""

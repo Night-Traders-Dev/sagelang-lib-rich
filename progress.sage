@@ -17,11 +17,19 @@ let SPINNER_PULSE = ["█", "▓", "▒", "░"]
 class Progress:
     proc init(self, console, total, description, transient, refresh_per_second):
         self.console = console
-        self.total = total if total != nil else 0
+        self.total = 0
+        if total != nil:
+            self.total = total
         self.completed = 0
-        self.description = description if description != nil else ""
-        self.transient = transient if transient != nil else false
-        self.refresh_per_second = refresh_per_second if refresh_per_second != nil else 10
+        self.description = ""
+        if description != nil:
+            self.description = description
+        self.transient = false
+        if transient != nil:
+            self.transient = transient
+        self.refresh_per_second = 10
+        if refresh_per_second != nil:
+            self.refresh_per_second = refresh_per_second
         self._spinner_idx = 0
         self._spinner = SPINNER_DOTS
         self._task_id = 0
@@ -32,12 +40,20 @@ class Progress:
         let task = {}
         task["id"] = self._task_id
         self._task_id = self._task_id + 1
-        task["description"] = description if description != nil else ""
-        task["total"] = total if total != nil else 100
+        task["description"] = ""
+        if description != nil:
+            task["description"] = description
+        task["total"] = 100
+        if total != nil:
+            task["total"] = total
         if total == nil:
             task["total"] = 100
-        task["completed"] = completed if completed != nil else 0
-        task["start_time"] = start_time if start_time != nil else nil
+        task["completed"] = 0
+        if completed != nil:
+            task["completed"] = completed
+        task["start_time"] = nil
+        if start_time != nil:
+            task["start_time"] = start_time
         push(self._tasks, task)
         return task["id"]
 
@@ -76,10 +92,10 @@ class Progress:
 
         let bar_filled = ""
         for i in range(filled):
-            bar_filled = bar_filled + chr(9608)  # Full block
+            bar_filled = bar_filled + "█"
         let bar_empty = ""
         for i in range(empty):
-            bar_empty = bar_empty + chr(9617)  # Light shade
+            bar_empty = bar_empty + "░"
 
         let spinner_char = self._spinner[self._spinner_idx]
         self._spinner_idx = (self._spinner_idx + 1) % len(self._spinner)
@@ -107,7 +123,9 @@ class Progress:
 
     # Iterate through all tasks and render
     proc render(self, console):
-        let width = console.width if console != nil else 80
+        let width = 80
+        if console != nil:
+            width = console.width
         let lines = []
         for i in range(len(self._tasks)):
             push(lines, self._render_task(self._tasks[i], width))
@@ -127,14 +145,28 @@ class Progress:
 # Simple progress bar (standalone)
 class ProgressBar:
     proc init(self, total, width, complete_style, finished_style, pulse_style, style, show_percent):
-        self.total = total if total != nil else 100
+        self.total = 100
+        if total != nil:
+            self.total = total
         self.completed = 0
-        self.width = width if width != nil else 40
-        self.complete_style = complete_style if complete_style != nil else "green"
-        self.finished_style = finished_style if finished_style != nil else "bright_green"
-        self.pulse_style = pulse_style if pulse_style != nil else "blue"
-        self.style = style if style != nil else ""
-        self.show_percent = show_percent if show_percent != nil else true
+        self.width = 40
+        if width != nil:
+            self.width = width
+        self.complete_style = "green"
+        if complete_style != nil:
+            self.complete_style = complete_style
+        self.finished_style = "bright_green"
+        if finished_style != nil:
+            self.finished_style = finished_style
+        self.pulse_style = "blue"
+        if pulse_style != nil:
+            self.pulse_style = pulse_style
+        self.style = ""
+        if style != nil:
+            self.style = style
+        self.show_percent = true
+        if show_percent != nil:
+            self.show_percent = show_percent
 
     proc update(self, completed):
         self.completed = completed
@@ -145,14 +177,17 @@ class ProgressBar:
         self.completed = self.completed + amount
 
     proc render(self, console):
-        let pct = (self.completed * 100) / (1 if self.total <= 0 else self.total)
+        let divisor = self.total
+        if divisor <= 0:
+            divisor = 1
+        let pct = (self.completed * 100) / divisor
         let filled = (pct * self.width) / 100 | 0
         if filled > self.width:
             filled = self.width
         let empty = self.width - filled
 
-        let filled_ch = chr(9608)
-        let empty_ch = chr(9617)
+        let filled_ch = "█"
+        let empty_ch = "░"
 
         let bar = rich.style.render_styled(
             self._repeat_char(filled_ch, filled),
@@ -187,7 +222,9 @@ class Status:
     proc init(self, status, console, spinner):
         self.status = status
         self.console = console
-        self.spinner = spinner if spinner != nil else SPINNER_DOTS
+        self.spinner = SPINNER_DOTS
+        if spinner != nil:
+            self.spinner = spinner
         self._idx = 0
         self._visible = false
 
