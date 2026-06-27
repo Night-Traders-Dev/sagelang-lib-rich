@@ -70,7 +70,7 @@ class Panel:
 
         # Top border with title
         let top_line = self._make_border_line(box, "top", width, self.title, self.title_align, self.subtitle, self.subtitle_align)
-        lines = push(lines, top_line)
+        push(lines, top_line)
 
         # Top padding
         let top_pad = 0

@@ -18,11 +18,15 @@ class Table:
         self.caption = nil
         if caption != nil:
             self.caption = caption
-        self.box_style = rich.box.get_box("single")
-        if box_style != nil:
+        if type(box_style) == "string":
+            self.box_style = rich.box.get_box(box_style)
+        else:
             self.box_style = box_style
-        self.border_style = "blue"
-        if border_style != nil:
+        if self.box_style == nil:
+            self.box_style = rich.box.get_box("single")
+        if type(border_style) == "string":
+            self.border_style = rich.style.parse_style(border_style)
+        else:
             self.border_style = border_style
         self.show_header = true
         if show_header != nil:
