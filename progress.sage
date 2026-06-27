@@ -113,7 +113,7 @@ class Progress:
 
         let desc = task["description"]
         if len(desc) > 25:
-            desc_t = ""
+            let desc_t = ""
             for i in range(22):
                 desc_t = desc_t + desc[i]
             desc = desc_t + "..."

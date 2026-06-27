@@ -93,6 +93,4 @@ proc print_tree(t):
     let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
     c.rich_print(t.render(c))
 
-# emoji(name) - get an emoji character  
-proc get_emoji(name):
-    return rich.emoji.get_emoji(name)
+
