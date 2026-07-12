@@ -19,7 +19,7 @@ import rich.rule
 import rich.progress
 import rich.markdown
 import rich.padding
-import rich.emoji
+import rich.emoji as emoji_mod
 import rich.spinner
 import rich.traceback
 import rich.prompt
@@ -27,7 +27,7 @@ import rich.prompt
 # --- Convenience factory procs (Python-rich compatible API) ---
 
 # Panel(content, title=nil, border_style=nil, box=nil)
-proc Panel(content, title, border_style, box_name):
+proc Panel(content, title=nil, border_style=nil, box_name=nil):
     let bl = "left"
     let bx = "single"
     if box_name != nil:
@@ -38,25 +38,25 @@ proc Panel(content, title, border_style, box_name):
     return rich.panel.Panel(content, title, bl, nil, "right", bx, bs, [0,1], true, nil, "")
 
 # Table(title=nil, box=nil, border_style=nil)
-proc Table(title, box_name, border_style):
+proc Table(title=nil, box_name=nil, border_style=nil):
     let bx = "single"
     if box_name != nil:
         bx = box_name
     return rich.table.Table(title, nil, bx, border_style, true, nil, true, nil, [0,1], nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 # Tree(label=nil, style=nil)
-proc Tree(label, style):
+proc Tree(label=nil, style=nil):
     return rich.tree.Tree(label, style, "dim", false)
 
 # Rule(title=nil, style=nil, align=nil)
-proc Rule(title, style, align):
+proc Rule(title=nil, style=nil, align=nil):
     let al = "center"
     if align != nil:
         al = align
     return rich.rule.Rule(title, style, al, "─")
 
 # Markdown(markup=nil)
-proc Markdown(markup):
+proc Markdown(markup=nil):
     return rich.markdown.Markdown(markup, nil, nil)
 
 # --- Print helpers ---
@@ -92,5 +92,9 @@ proc print_table(headers, rows, title):
 proc print_tree(t):
     let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
     c.rich_print(t.render(c))
+
+# emoji(name) - get unicode character for emoji name
+proc emoji(name):
+    return emoji_mod.get_emoji(name)
 
 
