@@ -66,6 +66,10 @@ proc show(obj):
     let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
     c.rich_print(obj)
 
+# print(obj) - print any rich renderable
+proc print(obj):
+    show(obj)
+
 # print_styled(text, style_str) - print styled text
 proc print_styled(text, style_str):
     let c = rich.console.Console(nil, nil, nil, nil, nil, nil)
