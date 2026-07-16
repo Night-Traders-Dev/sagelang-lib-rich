@@ -138,6 +138,26 @@ live.update("Done!")
 live.stop()
 ```
 
+## Styled Prompt
+
+```sage
+import rich
+
+# Build a multi-part styled prompt for interactive shells
+let prompt = rich.render_prompt([
+    ["SageSMP", "bold bright_cyan"],
+    [" → ", "bold bright_magenta"],
+])
+let line = input(prompt)
+```
+
+Parts are `[text, style_string]` pairs. Plain strings are also accepted (rendered unstyled).
+
+## Changelog
+
+- **v1.2.0**: Fixed duplicate emoji entries (`dizzy`→`dizzy_face`, `mouse`→`mouse_peripheral`, removed duplicate `lavender_blush` in color map). Fixed `merge_styles` boolean override logic (could not unset bold/italic via merge). Added missing `not` style negation for dim, underline, blink, reverse, strike. Improved `detect_terminal_size()` to actually query the terminal via `stty size` instead of always returning 80x24.
+- **v1.1.0**: Fixed bright color ANSI escape codes (colors 8-15 now correctly map to codes 90-97 for foreground and 100-107 for background). Added `render_prompt()` for building styled interactive prompts.
+
 ## License
 
 MIT — Same as SageLang

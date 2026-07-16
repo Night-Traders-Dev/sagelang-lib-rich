@@ -1,4 +1,5 @@
 gc_disable()
+import io
 import rich.style
 import rich.color
 import rich.theme
@@ -9,9 +10,18 @@ import rich.measure
 
 # Terminal capabilities
 proc detect_terminal_size():
-    # Try to detect terminal size
+    # Try to detect terminal size via stty
     # Returns {"width": w, "height": h}
     # Default to 80x24 if can't detect
+    let raw = io.shell("stty size 2>/dev/null")
+    if raw != nil and len(raw) > 0:
+        let trimmed = replace(replace(raw, chr(10), ""), chr(13), "")
+        let parts = split(trimmed, " ")
+        if len(parts) == 2:
+            let h = tonumber(parts[0])
+            let w = tonumber(parts[1])
+            if w != nil and h != nil and w > 0 and h > 0:
+                return {"width": w, "height": h}
     return {"width": 80, "height": 24}
 
 # Console class

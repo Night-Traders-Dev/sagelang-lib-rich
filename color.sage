@@ -194,7 +194,6 @@ proc create_named_colors():
     colors["ivory"] = [255, 255, 240]
     colors["antique_white"] = [250, 235, 215]
     colors["linen"] = [250, 240, 230]
-    colors["lavender_blush"] = [255, 240, 245]
     colors["beige"] = [245, 245, 220]
     colors["gainsboro"] = [220, 220, 220]
     colors["light_grey"] = [211, 211, 211]
@@ -318,15 +317,18 @@ proc color_ansi_escape(color, background):
         prefix = "48"
     if ctype == COLOR_TYPE_STANDARD:
         let num = color["number"]
-        if background:
-            num = num + 40
-            if num >= 100:
-                num = num - 60
+        if num >= 8:
+            # Bright colors: 90-97 (fg) or 100-107 (bg)
+            if background:
+                return chr(27) + "[" + str(num - 8 + 100) + "m"
+            else:
+                return chr(27) + "[" + str(num - 8 + 90) + "m"
         else:
-            num = num + 30
-            if num >= 90:
-                num = num - 60
-        return chr(27) + "[" + str(num) + "m"
+            # Standard colors: 30-37 (fg) or 40-47 (bg)
+            if background:
+                return chr(27) + "[" + str(num + 40) + "m"
+            else:
+                return chr(27) + "[" + str(num + 30) + "m"
     if ctype == COLOR_TYPE_256:
         let num = color["number"]
         return chr(27) + "[" + prefix + ";5;" + str(num) + "m"

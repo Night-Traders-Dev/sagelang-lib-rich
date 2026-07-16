@@ -89,28 +89,48 @@ proc parse_style(style_str):
                 s["bold"] = false
                 i = i + 1
             else:
-                if part == "dim":
-                    s["dim"] = true
-                else:
-                    if part == "italic":
-                        s["italic"] = true
-                    else:
-                        if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "italic":
-                            s["italic"] = false
-                            i = i + 1
-                        else:
-                            if part == "underline":
-                                s["underline"] = true
-                            else:
-                                if part == "blink":
-                                    s["blink"] = true
+                                if part == "dim":
+                                    s["dim"] = true
                                 else:
-                                    if part == "reverse":
-                                        s["reverse"] = true
+                                    if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "dim":
+                                        s["dim"] = false
+                                        i = i + 1
                                     else:
-                                        if part == "strike":
-                                            s["strike"] = true
+                                        if part == "italic":
+                                            s["italic"] = true
                                         else:
+                                            if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "italic":
+                                                s["italic"] = false
+                                                i = i + 1
+                                            else:
+                                                if part == "underline":
+                                                    s["underline"] = true
+                                                else:
+                                                    if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "underline":
+                                                        s["underline"] = false
+                                                        i = i + 1
+                                                    else:
+                                                        if part == "blink":
+                                                            s["blink"] = true
+                                                        else:
+                                                            if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "blink":
+                                                                s["blink"] = false
+                                                                i = i + 1
+                                                            else:
+                                                                if part == "reverse":
+                                                                    s["reverse"] = true
+                                                                else:
+                                                                    if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "reverse":
+                                                                        s["reverse"] = false
+                                                                        i = i + 1
+                                                                    else:
+                                                                        if part == "strike":
+                                                                            s["strike"] = true
+                                                                        else:
+                                                                            if part == "not" and i + 1 < len(parts) and lower(parts[i + 1]) == "strike":
+                                                                                s["strike"] = false
+                                                                                i = i + 1
+                                                                            else:
                                             if part == "link":
                                                 if i + 1 < len(parts):
                                                     s["link"] = parts[i + 1]
@@ -198,34 +218,34 @@ proc merge_styles(base, override):
         return override
     let result = {}
     result["color"] = base["color"]
-    if override["color"] != nil:
+    if dict_has(override, "color") and override["color"] != nil:
         result["color"] = override["color"]
     result["bgcolor"] = base["bgcolor"]
-    if override["bgcolor"] != nil:
+    if dict_has(override, "bgcolor") and override["bgcolor"] != nil:
         result["bgcolor"] = override["bgcolor"]
     result["bold"] = base["bold"]
-    if override["bold"] != false:
+    if dict_has(override, "bold") and override["bold"] != base["bold"]:
         result["bold"] = override["bold"]
     result["dim"] = base["dim"]
-    if override["dim"] != false:
+    if dict_has(override, "dim") and override["dim"] != base["dim"]:
         result["dim"] = override["dim"]
     result["italic"] = base["italic"]
-    if override["italic"] != false:
+    if dict_has(override, "italic") and override["italic"] != base["italic"]:
         result["italic"] = override["italic"]
     result["underline"] = base["underline"]
-    if override["underline"] != false:
+    if dict_has(override, "underline") and override["underline"] != base["underline"]:
         result["underline"] = override["underline"]
     result["blink"] = base["blink"]
-    if override["blink"] != false:
+    if dict_has(override, "blink") and override["blink"] != base["blink"]:
         result["blink"] = override["blink"]
     result["reverse"] = base["reverse"]
-    if override["reverse"] != false:
+    if dict_has(override, "reverse") and override["reverse"] != base["reverse"]:
         result["reverse"] = override["reverse"]
     result["strike"] = base["strike"]
-    if override["strike"] != false:
+    if dict_has(override, "strike") and override["strike"] != base["strike"]:
         result["strike"] = override["strike"]
     result["link"] = base["link"]
-    if override["link"] != nil:
+    if dict_has(override, "link") and override["link"] != nil:
         result["link"] = override["link"]
     return result
 

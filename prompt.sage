@@ -81,3 +81,14 @@ proc select(prompt_text, options, default_val, console):
         return default_val
     let num = tonumber(result)
     return num
+
+# Render a styled prompt string (returns ANSI string, does not read input)
+proc render_prompt(parts):
+    let result = ""
+    for i in range(len(parts)):
+        let p = parts[i]
+        if type(p) == "array" and len(p) == 2:
+            result = result + rich.style.render_styled(str(p[0]), rich.style.parse_style(p[1]))
+        else:
+            result = result + str(p)
+    return result

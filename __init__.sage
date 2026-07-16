@@ -101,4 +101,7 @@ proc print_tree(t):
 proc emoji(name):
     return emoji_mod.get_emoji(name)
 
+# render_prompt(parts) - build a styled prompt string from parts
+proc render_prompt(parts):
+    return rich.prompt.render_prompt(parts)
 
