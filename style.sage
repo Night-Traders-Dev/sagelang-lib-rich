@@ -131,22 +131,22 @@ proc parse_style(style_str):
                                                                                 s["strike"] = false
                                                                                 i = i + 1
                                                                             else:
-                                            if part == "link":
-                                                if i + 1 < len(parts):
-                                                    s["link"] = parts[i + 1]
-                                                    i = i + 1
-                                            else:
-                                                if part == "default" or part == "none":
-                                                    s["color"] = nil
-                                                    s["bgcolor"] = nil
-                                                else:
-                                                    let c = rich.color.parse_color(part)
-                                                    if c != nil:
-                                                        if expecting_on:
-                                                            s["bgcolor"] = c
-                                                            expecting_on = false
-                                                        else:
-                                                            s["color"] = c
+                                                                                if part == "link":
+                                                                                    if i + 1 < len(parts):
+                                                                                        s["link"] = parts[i + 1]
+                                                                                        i = i + 1
+                                                                                else:
+                                                                                    if part == "default" or part == "none":
+                                                                                        s["color"] = nil
+                                                                                        s["bgcolor"] = nil
+                                                                                    else:
+                                                                                        let c = rich.color.parse_color(part)
+                                                                                        if c != nil:
+                                                                                            if expecting_on:
+                                                                                                s["bgcolor"] = c
+                                                                                                expecting_on = false
+                                                                                            else:
+                                                                                                s["color"] = c
         i = i + 1
     return s
 
